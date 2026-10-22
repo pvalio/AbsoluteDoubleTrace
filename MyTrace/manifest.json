@@ -1,100 +1,91 @@
 {
-	"manifest_version":2,
+	"manifest_version":3,
 
 	"name":"__MSG_addon_name__",
 	"short_name":"Trace",
 	"author":"AbsoluteDouble",
 	"description":"__MSG_addon_description__",
-	"default_locale": "en",
-	"minimum_chrome_version":"41",
-	"version":"3.0.5",
-  	"homepage_url":"https://absolutedouble.co.uk/trace/",
-  	"options_page":"html/options.html",
-  	"incognito":"spanning",
-	"options_ui": {
-	  	"page":"html/options.html",
-	  	"chrome_style":false,
-	  	"open_in_tab":true
+	"default_locale":"en",
+	"minimum_chrome_version":"121",
+	"version":"3.1.0",
+	"homepage_url":"https://absolutedouble.co.uk/trace/",
+	"incognito":"spanning",
+	"options_ui":{
+		"page":"html/options.html",
+		"open_in_tab":true
 	},
 
-	"browser_action": {
-		"default_icon": {
-		  	"32": "icons/trace_32.png",
-		  	"64": "icons/trace_64.png",
-		  	"128": "icons/trace_128.png",
-		 	"256": "icons/trace_256.png"
+	"action":{
+		"default_icon":{
+			"32":"icons/trace_32.png",
+			"64":"icons/trace_64.png",
+			"128":"icons/trace_128.png",
+			"256":"icons/trace_256.png"
 		},
-		"default_title": "Trace | Tracking Protection",
-		"default_popup": "html/report.html",
-		"browser_style": false
+		"default_title":"Trace | Tracking Protection",
+		"default_popup":"html/report.html"
 	},
-	"commands": {
+	"commands":{
 		"ToggleTraceWeb":{
 			"suggested_key":{
-			  	"default":"Ctrl+Shift+E",
-			  	"mac":"Command+Shift+E"
+				"default":"Ctrl+Shift+E",
+				"mac":"Command+Shift+E"
 			},
-		  	"description": "Toggle Web Controller"
+			"description":"Toggle Web Controller"
 		},
-		"PauseTrace": {
-			"suggested_key": {
+		"PauseTrace":{
+			"suggested_key":{
 				"default":"Ctrl+Shift+F",
 				"mac":"Command+Shift+F"
 			},
-			"description": "Pause Trace"
+			"description":"Pause Trace"
 		},
-		"OpenTraceSettings": {
-		  	"suggested_key": {
+		"OpenTraceSettings":{
+			"suggested_key":{
 				"default":"Ctrl+Shift+X",
 				"mac":"Command+Shift+X"
-		  	},
-		  	"description": "Open the Trace dashboard"
+			},
+			"description":"Open the Trace dashboard"
 		}
-  	},
-	"icons": {
-		"32": "icons/trace_32.png",
-		"64": "icons/trace_64.png",
-		"128": "icons/trace_128.png",
-		"256": "icons/trace_256.png"
 	},
-	"permissions": [
-	  	"activeTab",
+	"icons":{
+		"32":"icons/trace_32.png",
+		"64":"icons/trace_64.png",
+		"128":"icons/trace_128.png",
+		"256":"icons/trace_256.png"
+	},
+	"permissions":[
 		"alarms",
+		"cookies",
+		"declarativeNetRequest",
+		"declarativeNetRequestFeedback",
 		"notifications",
 		"privacy",
 		"storage",
-	  	"tabs",
-		"webRequest",
-		"webRequestBlocking",
+		"tabs",
+		"unlimitedStorage",
+		"webRequest"
+	],
+	"host_permissions":[
 		"<all_urls>"
 	],
-	"background": {
-		"scripts": [
-			"js/libraries/cookieparse.js",
-			"js/libraries/jquery.js",
-		  	"js/common/data.js",
-			"js/common/shared.js",
-			"js/background/alarms.js",
-			"js/background/background.js",
-			"js/background/headers.js",
-			"js/background/prefs.js",
-			"js/background/session.js",
-			"js/background/simple.js",
-			"js/background/stats.js",
-			"js/background/tabs.js",
-			"js/background/vars.js",
-			"js/background/web.js",
-			"js/background/whitelist.js",
-			"js/background/trace.js"
-		],
-	  	"persistent":true
+	"background":{
+		"service_worker":"js/mv3/sw.js"
 	},
-  	"content_scripts":[
-	  	{
+	"content_scripts":[
+		{
+			"all_frames":true,
+			"js":["js/contentscript/page-main.js"],
+			"matches":["http://*/*","https://*/*"],
+			"match_about_blank":false,
+			"run_at":"document_start",
+			"world":"MAIN"
+		},
+		{
 			"all_frames":true,
 			"js":["js/contentscript/page.js"],
 			"matches":["http://*/*","https://*/*"],
-		  	"match_about_blank":false,
+			"match_about_blank":false,
 			"run_at":"document_start"
 		},
 		{
@@ -105,12 +96,22 @@
 			"run_at":"document_end"
 		}
 	],
-  	"web_accessible_resources": [
-		"html/blocked.html",
-	  	"js/pages/blocked.js",
-		"js/common/ux.js",
-		"js/common/shared.js",
-		"js/libraries/jquery.js"
-  	],
-	"content_security_policy":"default-src 'none'; style-src 'unsafe-inline'; object-src 'self'; script-src 'self'; connect-src https://absolutedouble.co.uk https://trace-extension.absolutedouble.co.uk https://raw.githubusercontent.com"
+	"web_accessible_resources":[
+		{
+			"resources":[
+				"html/blocked.html",
+				"css/blocked.css",
+				"js/pages/blocked.js",
+				"js/common/ux.js",
+				"js/common/shared.js",
+				"js/common/theme.js",
+				"js/libraries/jquery.js",
+				"js/mv3/bridge.js"
+			],
+			"matches":["<all_urls>"]
+		}
+	],
+	"content_security_policy":{
+		"extension_pages":"default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'self'; script-src 'self'; connect-src 'self'"
+	}
 }

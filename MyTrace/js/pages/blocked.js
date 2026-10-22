@@ -49,6 +49,13 @@ let tBlock = {
 		});
 	},
 	getPageDetails:function(){
+		// MV3: declarativeNetRequest redirects here with "#dnr;<original url>"
+		if (window.location.hash.indexOf("#dnr;") === 0){
+			tBlock.blockedURL = window.location.hash.substring(5);
+			tBlock.blockReason = 2;
+			return;
+		}
+
 		if (!window.location.hash.includes("u;")) return;
 
 		let u = window.location.hash.split(";")[1];
@@ -73,7 +80,8 @@ let tBlock = {
 			5:"Blocked because file matched blacklisted files",
 			"undefined":"No reason set"
 		};
-		l.attr("href",tBlock.blockedURL);
+		// Only link to real web addresses (the hash can be set by anyone who opens this page)
+		if (/^https?:\/\//i.test(tBlock.blockedURL)) l.attr("href",tBlock.blockedURL);
 		u.text(tBlock.blockedURL);
 		r.text(types[tBlock.blockReason]);
 	},

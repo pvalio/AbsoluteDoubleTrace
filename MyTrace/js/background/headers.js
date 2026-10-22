@@ -440,19 +440,42 @@ var Headers = {
 
 			if (!Whitelist.CheckList(details.url,"Pref_UserAgent")) return;
 
-			for (let i=0;i<details.requestHeaders.length;++i){
+			// Modified: also rewrite User-Agent Client Hints (Sec-CH-UA*). The original
+			// only changed User-Agent, so Chromium kept sending the real browser,
+			// version and OS in the Sec-CH-UA headers right next to the fake UA.
+			let chromium = (Vars.uaFamily === "chromium");
+			let major = Vars.uaMajor;
+			let lowEntropy = {
+				"sec-ch-ua":'"Not.A/Brand";v="99", "Chromium";v="' + major + '", "' + Vars.uaBrand + '";v="' + major + '"',
+				"sec-ch-ua-mobile":"?0",
+				"sec-ch-ua-platform":'"' + Vars.uaPlatformName + '"'
+			};
+			let changed = false;
+
+			for (let i = details.requestHeaders.length - 1; i >= 0; --i){
 				let headerName = details.requestHeaders[i].name.toString().toLowerCase();
 
-				// Skip headers that aren't user agent
-				if (headerName !== "user-agent") continue;
-
-				// Change header then break
-				if (details.requestHeaders[i].value !== Vars.useragent){
-					details.requestHeaders[i].value = Vars.useragent;
-					Tabs.LogHeaders(details.tabId,"useragent");
+				if (headerName === "user-agent"){
+					if (details.requestHeaders[i].value !== Vars.useragent){
+						details.requestHeaders[i].value = Vars.useragent;
+						changed = true;
+					}
+					continue;
 				}
-				break;
+
+				if (headerName.indexOf("sec-ch-ua") !== 0) continue;
+
+				if (chromium && lowEntropy.hasOwnProperty(headerName)){
+					details.requestHeaders[i].value = lowEntropy[headerName];
+				} else {
+					// Firefox/Safari don't send client hints at all, and high-entropy
+					// hints (full version, platform version, arch...) would contradict the UA.
+					details.requestHeaders.splice(i, 1);
+				}
+				changed = true;
 			}
+
+			if (changed) Tabs.LogHeaders(details.tabId,"useragent");
 
 			// Return new headers to be sent
 			return {requestHeaders:details.requestHeaders};

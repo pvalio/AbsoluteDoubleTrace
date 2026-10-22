@@ -14,6 +14,15 @@ var Web = {
 	},
 
 	BlocklistLoader:function(bypassCache){
+		// Modified: Trace's blocklist servers belong to an abandoned project.
+		// Downloading from them sent install codes to a third party and trusted
+		// whatever that server returns. Use the bundled list unless remote
+		// lists are explicitly re-enabled in vars.js.
+		if (Vars.remoteBlocklist !== true){
+			Web.GetBlockList(0,2);
+			return;
+		}
+
 		// Check if we are going to make a cache check
 		if (bypassCache || Prefs.Current.Main_Trace.DomainCache.enabled !== true){
 			Web.GetBlockList(0,0);
@@ -69,7 +78,7 @@ var Web = {
 		});
 	},
 	BlocklistURL:function(attempt,server){
-		if (server === 2) return Vars.blocklistOffline;
+		if (server === 2 || Vars.remoteBlocklist !== true) return Vars.blocklistOffline;
 
 		let url;
 		let installCodes = Web.GetInstallCodes();

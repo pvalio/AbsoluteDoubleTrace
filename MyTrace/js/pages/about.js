@@ -38,7 +38,7 @@ let About = {
 	UpdateBlocklist:function(){
 		TraceBg(function(bg){
 			if (bg.Prefs.Current.Pref_WebController.enabled !== true){
-				bg.Prefs.Current.Pref_WebController.enabled = true;
+				bg.Prefs.Set("Pref_WebController.enabled", true);
 			}
 			bg.Web.BlocklistLoader(true);
 		});

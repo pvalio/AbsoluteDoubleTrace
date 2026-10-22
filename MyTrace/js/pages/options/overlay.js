@@ -52,7 +52,7 @@ let Tutorial = {
 			$("<br/>"),$("<br/>"),
 			$("<span/>").text("You can find settings such as URL Parameter editing and Bad TLD Protection in the 'Requests' section."),
 			$("<br/>"),$("<br/>"),
-			$("<h3/>").html("If you find a bug with anything, especially features marked as 'Beta', please report it to <a class='dark' href='mailto:absolutedouble@gmail.com'>absolutedouble@gmail.com</a>"),
+			$("<h3/>").html("If you find a bug with anything, especially features marked as 'Beta', please report it on <a class='dark' href='https://github.com/pvalio/absolutedoubletrace/issues' rel='noreferrer'>GitHub</a>"),
 			Overlay.CloseUI()
 		);
 

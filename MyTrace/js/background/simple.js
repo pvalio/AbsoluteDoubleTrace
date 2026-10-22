@@ -323,4 +323,4 @@ let Simple = {
 
 };
 
-Simple.open();
+// MV3: Simple.open() is replaced by a listener in js/mv3/sw.js

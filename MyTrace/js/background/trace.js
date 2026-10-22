@@ -26,27 +26,11 @@ var Trace = {
 	// Chrome runtime functions
 	a:{
 		AssignRuntime:function(){
-			// Set uninstall URL
-			let storage_type = (!window.chrome.storage.sync ? window.chrome.storage.local : window.chrome.storage.sync);
-
-			storage_type.get('userid',function(items) {
-				if (typeof items === "undefined" || !items.hasOwnProperty("userid")) {
-					items = {'userid': "Unknown"};
-				}
-
-				// We pass the users error reporting ID so that their data can be purged from the error reporting database
-				let usr = items.userid;
-				let uninstallUrl = Vars.uninstallUrl + usr;
-
-				try {
-					chrome.runtime.setUninstallURL(uninstallUrl,function(){
-						if (Trace.DEBUG) console.log("[mangd]-> Set uninstall URL");
-					});
-				} catch(e){
-					chrome.runtime.setUninstallURL(uninstallUrl);
-					if (Trace.DEBUG) console.log("[mangd]-> Set uninstall URL using method 2");
-				}
-			});
+			// Modified: the original registered an uninstall URL on absolutedouble.co.uk
+			// that carried a persistent per-user ID. Clear it instead.
+			try {
+				chrome.runtime.setUninstallURL("");
+			} catch(e){}
 		},
 
 		NewInstall:function(details){
@@ -107,10 +91,18 @@ var Trace = {
 					"Pref_UserAgent":{
 						ua:Vars.useragent,
 						os:Vars.oscpu,
-						plat:Vars.platform
+						plat:Vars.platform,
+						vendor:Vars.vendor,
+						family:Vars.uaFamily,
+						brand:Vars.uaBrand,
+						major:Vars.uaMajor,
+						platformName:Vars.uaPlatformName
 					},
 					"Pref_WebGLFingerprint":{
-						gpuChose:Vars.gpuChose
+						gpuChose:Vars.gpuChose,
+						debug_vendor:Vars.gpuVendor,
+						ctx_vendor:Vars.glVendor,
+						ctx_gpu:Vars.glRenderer
 					}
 				},
 				"prefs":Prefs.Current,
@@ -151,7 +143,7 @@ var Trace = {
 	f:{
 		StartTrace:function(){
 			// Echo some console information
-			console.log("\nStarting Trace v." + chrome.runtime.getManifest().version + "\nSource code: https://github.com/jake-cryptic/AbsoluteDoubleTrace/\n");
+			console.log("\nStarting Trace v." + chrome.runtime.getManifest().version + "\nSource code: https://github.com/pvalio/absolutedoubletrace/\n");
 
 			// Create current object and prepare for loading
 			Prefs.Current = Prefs.Defaults;
@@ -192,11 +184,7 @@ var Trace = {
 			if (Vars.pSessions === true)
 				Session.init();
 
-			// Assign keyboard shortcuts
-			if (chrome.commands){
-				if (Trace.DEBUG) console.log("[commd]-> Assigned commands event");
-				chrome.commands.onCommand.addListener(Trace.f.KeyboardCommand);
-			}
+			// MV3: keyboard shortcuts are registered by js/mv3/sw.js
 
 			// Ping blocks
 			Web.ToggleBlockPings();
@@ -257,9 +245,7 @@ var Trace = {
 				Trace.Notify(Vars.paused ? "Trace paused." : "Trace protections are active again.","commd");
 			} else if (c === "OpenTraceSettings") {
 				if (Trace.DEBUG) console.info("Opening Trace's settings");
-				TraceBg(function(bg){
-					bg.Trace.f.OpenSettingsPage();
-				});
+				Trace.f.OpenSettingsPage();
 			} else {
 				Trace.Notify("Unknown Command","commd");
 			}
@@ -470,16 +456,4 @@ var Trace = {
 	}
 };
 
-// Assign runtime events
-if (chrome.runtime){
-	chrome.runtime.onInstalled.addListener(Trace.a.NewInstall);
-	chrome.runtime.onMessage.addListener(Trace.a.ContentTalk);
-	Trace.a.AssignRuntime();
-}
-
-// Start Protection
-try {
-	Trace.f.StartTrace();
-} catch(e){
-	setTimeout(Trace.f.StartTrace,500);
-}
+// MV3: runtime events and start-up are handled by js/mv3/sw.js

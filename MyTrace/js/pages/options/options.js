@@ -161,7 +161,7 @@ let Opts = {
 				$("#home .sect_cont").append(
 					$("<div/>",{"class":"sect_adv"}).append(
 						$("<div/>",{"class":"sect_adv_header"}).html("&nbsp;Developer Message"),
-						$("<div/>",{"class":"sect_adv_cont"}).text("You are running Trace on an unsupported browser - if you have any bugs please report them to absolutedouble@gmail.com")
+						$("<div/>",{"class":"sect_adv_cont"}).text("You are running Trace on an unsupported browser - if you have any bugs please report them on the project's GitHub Issues page")
 					)
 				);
 			}
@@ -290,7 +290,7 @@ let Opts = {
 				$("<span/>").text("Hi there! Would you like to leave feedback on Trace? (if not, no big deal, I'll not bother you again). Reviews and user-feedback really motivate me to make Trace even better. Thanks!"),
 				$("<br />"),$("<br />"),
 				$("<button/>").text("Contact Developer").on("click enter",function(){
-					let openUrl = "mailto:absolutedouble@gmail.com";
+					let openUrl = "https://github.com/pvalio/absolutedoubletrace/issues";
 					window.open(openUrl,"_blank");
 					ls.Store("hasAskedForFeedback",true);
 				}),
@@ -560,7 +560,7 @@ let Opts = {
 	UpdateBlocklist:function(){
 		TraceBg(function(bg){
 			if (bg.Prefs.Current.Pref_WebController.enabled !== true){
-				bg.Prefs.Current.Pref_WebController.enabled = true;
+				bg.Prefs.Set("Pref_WebController.enabled", true);
 			}
 			bg.Web.BlocklistLoader(true);
 		});

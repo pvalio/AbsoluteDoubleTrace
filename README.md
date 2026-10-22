@@ -1,3 +1,25 @@
+# Trace — Manifest V3 continuation (fork)
+
+This branch (`mv3`) is a community continuation of **Trace** by **AbsoluteDouble**,
+whose original repository was archived in 2023 and was Manifest V2 only (so it no
+longer loads in current Chrome/Chromium). This port:
+
+- Moves Trace to **Manifest V3** — a service worker and `declarativeNetRequest`
+  (see `MyTrace/js/mv3/`) — so it runs on current Chromium browsers again.
+- Carries a set of **privacy and fingerprint-protection bug-fixes** over the
+  original 3.0.5 release (see `MyTrace/` history): the crash reporter no longer
+  sends anything, error reporting is off by default, the uninstall tracking URL
+  and remote blocklist/telemetry are removed, user-agent / client-hints / WebGL
+  spoofing are made self-consistent, jQuery is updated to 3.7.1
+  (CVE-2020-11022 / CVE-2020-11023), and page-injection fingerprints are cleaned up.
+
+**Credit & licence.** All original code is © AbsoluteDouble, *all rights reserved*
+(see `LICENSE`). This is a personal continuation shared in good faith with
+attribution; it is not endorsed by the original author. If you are AbsoluteDouble
+and want this taken down or relicensed, please open an issue.
+
+---
+
 # Please Read!
 
 Trace has not been updated in a while due to personal circumstances.

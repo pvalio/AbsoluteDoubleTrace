@@ -510,7 +510,7 @@ var Prefs = {
 				"enabled":false
 			},
 			"ErrorReporting":{
-				"enabled":true
+				"enabled":false
 			},
 			"PremiumCode":""
 		},
